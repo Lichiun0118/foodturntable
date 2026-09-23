@@ -70,7 +70,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("👾 晚餐吃什麼 v2.0 💿")
+st.title("晚餐吃什麼")
 
 if "options" not in st.session_state:
     st.session_state.options = ["小高", "MDD", "藏壽司", "麥當勞"]
