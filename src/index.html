@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>晚餐吃什麼 - 簡潔版</title>
+    <!-- 引入思源黑體 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/index.css">
+  </head>
+  <body>
+    <h1>公館晚餐選擇障礙</h1>
+
+    <div class="control-panel">
+      <div class="control-group">
+        <input type="text" id="newOptionInput" placeholder="新增選項..." />
+        <button class="action-btn" onclick="addOption()">加入</button>
+      </div>
+      <div class="control-group">
+        <select id="removeOptionSelect"></select>
+        <button class="action-btn" onclick="removeOption()">移除</button>
+      </div>
+    </div>
+
+    <div class="data-display" id="dataDisplay"></div>
+
+    <button class="spin-btn" onclick="executeSpin()">開始旋轉</button>
+
+    <div id="wheel-container">
+      <div id="pointer"></div>
+      <canvas
+        id="wheelCanvas"
+        width="760"
+        height="760"
+        style="width: 380px; height: 380px"
+      ></canvas>
+    </div>
+
+    <div id="resultText"></div>
+    <script src="js/restaurants.cjs"></script>
+    <script src="js/index.cjs"></script>
+  </body>
+</html>
