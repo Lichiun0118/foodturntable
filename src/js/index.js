@@ -1,4 +1,4 @@
-import { defaultRestaurantOptions } from './restaurants.js';
+import { DEFAULT_OPTIONS } from './restaurants.js';
 
 const STORAGE_KEY = "minimalist_wheel_options";
 const COLOR_PALETTE = [
@@ -26,7 +26,7 @@ function initializeApp() {
   if (storedData) {
     currentOptions = JSON.parse(storedData);
   } else {
-    currentOptions = [...defaultRestaurantOptions];
+    currentOptions = [...DEFAULT_OPTIONS];
   }
   updateInterface();
 }

@@ -1,4 +1,4 @@
-const DEFAULT_OPTIONS = [
+export const DEFAULT_OPTIONS = [
   "小高",
   "藏壽司",
   "麥當勞",
