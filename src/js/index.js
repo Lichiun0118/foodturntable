@@ -143,3 +143,7 @@ document.fonts.ready.then(() => {
 newOptionInput.addEventListener("keypress", function (e) {
   if (e.key === "Enter") addOption();
 });
+
+window.addOption = addOption;
+window.removeOption = removeOption;
+window.executeSpin = executeSpin;
