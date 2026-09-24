@@ -1,6 +1,6 @@
 export const DEFAULT_OPTIONS = [
   "小高",
-  "藏壽司",
+  "壽司郎",
   "麥當勞",
   "墨洋",
   "鍋in",
@@ -20,4 +20,6 @@ export const DEFAULT_OPTIONS = [
   "白帝城",
   "道樂",
   "三米三",
+  "池先生",
+  "台大牛莊",
 ];
