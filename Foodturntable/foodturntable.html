@@ -28,12 +28,11 @@ st.markdown("""
         image-rendering: pixelated;
     }
     
-    /* Main title 8-bit arcade effect with responsive font sizing */
+    /* Main title 8-bit arcade effect */
     h1 {
         color: #ffec27 !important;
         text-shadow: 4px 4px 0px #ff004d, 8px 8px 0px #000000;
         font-family: 'Press Start 2P', 'DotGothic16', monospace !important;
-        font-size: clamp(1.4rem, 5vw, 2.5rem) !important;
         font-weight: 900 !important;
         text-align: center;
         letter-spacing: 4px;
@@ -61,7 +60,7 @@ st.markdown("""
         border-radius: 0px !important;
         box-shadow: 6px 6px 0px #000000 !important;
         font-family: 'Press Start 2P', 'DotGothic16', monospace !important;
-        font-size: clamp(0.9rem, 2.5vw, 1.1rem) !important;
+        font-size: 1.1rem !important;
     }
 
     /* 8-bit RPG arcade button style with stepped pixel borders */
@@ -71,7 +70,7 @@ st.markdown("""
         border: 4px solid #fff1e8 !important;
         border-radius: 0px !important;
         font-family: 'Press Start 2P', 'DotGothic16', monospace !important;
-        font-size: clamp(0.8rem, 2.5vw, 1rem) !important;
+        font-size: 1rem !important;
         font-weight: bold !important;
         text-shadow: 2px 2px 0px #000000;
         box-shadow: 
@@ -116,7 +115,7 @@ st.title("👾 晚餐吃什麼 👾")
 
 # Initialize default food options in session state
 if "options" not in st.session_state:
-    st.session_state.options = ["小高", "MDD", "藏壽司", "麥當勞"]
+    st.session_state.options = ["小高", "藏壽司", "麥當勞"]
 
 add_col, remove_col = st.columns(2)
 
@@ -150,81 +149,46 @@ if len(st.session_state.options) > 0:
     <!DOCTYPE html>
     <html>
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
         <style>
-            * {{
-                box-sizing: border-box;
-            }}
             body {{ 
-                margin: 0;
-                padding: 8px 12px 24px 12px;
-                display: flex;
-                flex-direction: column;
-                align-items: center; 
-                justify-content: flex-start;
-                font-family: 'Press Start 2P', 'DotGothic16', monospace;
-                overflow-x: hidden; 
-                background: transparent;
-                color: #fff1e8;
+                display: flex; flex-direction: column; align-items: center; 
+                font-family: 'Press Start 2P', 'DotGothic16', monospace; overflow: hidden; 
+                background: transparent; color: #fff1e8;
                 image-rendering: pixelated;
             }}
-
-            /* Responsive 1:1 square container so the wheel never distorts on any screen size */
             #wheel-container {{
-                position: relative;
-                width: min(84vw, 380px);
-                height: min(84vw, 380px);
-                aspect-ratio: 1 / 1;
-                margin-top: 28px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
+                position: relative; width: 400px; height: 400px; margin-top: 36px;
+                display: flex; align-items: center; justify-content: center;
             }}
             
-            /* Pixelated canvas locked to 1:1 aspect ratio inside container */
+            /* Pixelated canvas with retro stepped shadow */
             #wheelCanvas {{
-                width: 100%;
-                height: 100%;
-                aspect-ratio: 1 / 1;
-                display: block;
+                width: 100%; height: 100%;
                 image-rendering: pixelated;
-                filter: drop-shadow(6px 6px 0px #000000);
+                filter: drop-shadow(8px 8px 0px #000000);
                 transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1);
             }}
             
-            /* 8-bit pixel arrow pointer scaled proportionally to the wheel container */
+            /* 8-bit pixel arrow pointer */
             #pointer {{
-                position: absolute;
-                top: -5.5%;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 10%;
-                height: 12%;
-                z-index: 10;
+                position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+                width: 40px; height: 48px; z-index: 10;
                 filter: drop-shadow(4px 4px 0px #000000);
-                pointer-events: none;
             }}
             
-            /* Responsive 8-bit arcade start button */
+            /* 8-bit arcade start button */
             button {{
-                padding: 12px 24px;
-                font-size: clamp(14px, 4vw, 20px);
-                font-weight: bold;
-                background-color: #00e436;
-                color: #000000;
+                padding: 14px 28px; font-size: 20px; font-weight: bold;
+                background-color: #00e436; color: #000000;
                 border: 4px solid #fff1e8;
                 box-shadow: 
                     inset -4px -4px 0px #008751,
                     inset 4px 4px 0px #a8e72e,
                     6px 6px 0px #000000;
-                cursor: pointer;
-                margin-top: 6px;
+                cursor: pointer; margin-top: 10px;
                 font-family: 'Press Start 2P', 'DotGothic16', monospace;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                max-width: 92vw;
+                text-transform: uppercase; letter-spacing: 2px;
             }}
             button:hover {{
                 background-color: #ffec27;
@@ -240,20 +204,16 @@ if len(st.session_state.options) > 0:
                     2px 2px 0px #000000;
             }}
             
-            /* Responsive RPG dialogue result box */
+            /* RPG dialogue result box */
             #resultText {{ 
-                margin-top: 24px;
-                padding: 12px 16px;
-                width: min(90vw, 380px);
-                font-size: clamp(15px, 4.2vw, 22px);
-                font-weight: bold; 
-                color: #ffec27;
-                background-color: #000000;
+                margin-top: 28px; padding: 12px 20px;
+                font-size: 24px; font-weight: bold; 
+                color: #ffec27; background-color: #000000;
                 border: 4px solid #fff1e8;
                 box-shadow: 6px 6px 0px #000000;
-                text-shadow: 2px 2px 0px #ff004d;
+                text-shadow: 3px 3px 0px #ff004d;
                 text-align: center;
-                word-break: break-word;
+                min-width: 300px;
             }}
             .blink {{ animation: blinker 0.6s steps(2, start) infinite; }}
             @keyframes blinker {{ to {{ visibility: hidden; }} }}
@@ -400,6 +360,6 @@ if len(st.session_state.options) > 0:
     </html>
     """
     
-    components.html(html_content, height=580)
+    components.html(html_content, height=620)
 else:
     st.error("[ERROR] INVENTORY EMPTY! PLEASE INSERT COIN TO ADD OPTIONS.")
