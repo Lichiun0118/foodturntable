@@ -81,3 +81,31 @@
             margin-top: 40px; font-size: 1.5rem; font-weight: 700;
             color: var(--text-color); text-align: center; min-height: 40px;
         }
+
+        @media (max-width: 600px) {
+        .control-panel {
+        flex-direction: column;  
+        gap: 15px;               
+        padding: 0 20px;         
+        width: 100%;             
+        box-sizing: border-box;
+        }
+
+        .control-group {
+        width: 100%;
+        display: flex;
+        justify-content: center; 
+        }
+
+        #newOptionInput, 
+        #removeOptionSelect {
+        flex: 1;                
+        max-width: 250px;        
+        margin-right: 10px;      
+        }
+
+        #wheelCanvas {
+        max-width: 90vw;
+        height: auto !important;
+        }
+}
