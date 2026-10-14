@@ -30,3 +30,13 @@ node --test tests/restaurant-model.test.mjs
 使用者可在「編輯餐廳與價格」自行記錄價格與來源，資料儲存在目前瀏覽器的 localStorage；不會更新其他使用者的預設名單。舊版 `minimalist_wheel_options` 名單會在沒有新版資料時讀入，保留原有自訂店名與移除紀錄。
 
 尚未自行編輯價格的舊名單會取得日後更新的預設價格。使用者已填寫的價格會保留；明確清空價格也會記錄為個人選擇，不會被預設金額覆蓋。
+
+## 更新與部署快取
+
+修改 CSS、JavaScript 或預設餐廳資料後，在提交前執行：
+
+```sh
+python3 scripts/version-assets.py
+```
+
+這會依檔案內容更新 HTML 中 CSS／JavaScript 的版本網址，以及入口模組引用的餐廳資料與篩選模組版本，避免手機讀到「新 HTML＋舊 CSS」或舊價格。程式可重複執行，沒有額外套件需求。網站部署時請一起上傳 `src` 內全部檔案並保留資料夾結構。
