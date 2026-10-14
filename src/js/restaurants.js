@@ -46,5 +46,7 @@ export const DEFAULT_RESTAURANTS = DEFAULT_OPTIONS.map((name) => ({
   priceSource: null,
   priceCheckedAt: null,
   mapsUrl: null,
+  priceReferenceUrl: null,
+  priceNote: null,
   ...VERIFIED_PRICES[name],
 }));

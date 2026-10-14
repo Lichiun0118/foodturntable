@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants } from '../src/js/restaurant-model.js';
+import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl } from '../src/js/restaurant-model.js';
 import { DEFAULT_RESTAURANTS } from '../src/js/restaurants.js';
 
 test('budget cap uses the whole per-person range, including exact boundary', () => {
@@ -73,4 +73,26 @@ test('大盛 uses the user-supplied Maps range; other unverified restaurants sta
   assert.equal(matchesBudget(restaurant, 250), false);
   assert.equal(matchesBudget(restaurant, 400), true);
   assert.equal(DEFAULT_RESTAURANTS.filter(hasPrice).length, 1);
+});
+
+
+test('menu and review prices retain their provenance instead of becoming Maps prices', () => {
+  const menu = {name: '測試店', priceMin: 120, priceMax: 180, priceSource: 'menu', priceReferenceUrl: 'https://example.com/menu', priceNote: '主餐，飲料另計', priceCheckedAt: '2026-10-14'};
+  const [migrated] = normalizeRestaurants([{name: '測試店', priceMin: null, priceMax: null}], [menu]);
+  assert.equal(migrated.priceReferenceUrl, menu.priceReferenceUrl);
+  assert.equal(migrated.priceNote, menu.priceNote);
+  assert.match(priceSourceLabel(migrated), /^官網／菜單參考/);
+  assert.match(priceSourceLabel({...menu, priceSource: 'review'}), /^食記參考/);
+  const [personal] = normalizeRestaurants([{name: '測試店', priceMin: 100, priceMax: 100, priceSource: 'personal'}], [menu]);
+  assert.equal(personal.priceReferenceUrl, null);
+  assert.equal(personal.priceNote, null);
+});
+
+test('reference links reject executable URLs and embedded credentials', () => {
+  const known = {priceMin: 100, priceMax: 200};
+  for (const url of ['javascript:alert(1)', 'http://example.com', 'https://user:password@example.com', 'not a url']) {
+    assert.equal(priceReferenceUrl({...known, priceReferenceUrl: url}), null);
+  }
+  assert.equal(priceReferenceUrl({...known, priceReferenceUrl: 'https://example.com/menu'}), 'https://example.com/menu');
+  assert.equal(priceReferenceUrl({priceMin: null, priceMax: null, priceReferenceUrl: 'https://example.com/menu'}), null);
 });

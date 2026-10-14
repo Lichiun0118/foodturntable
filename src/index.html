@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f4f1ea" />
     <title>今晚吃哪家｜公館晚餐拉霸</title>
-    <link rel="stylesheet" href="styles/index.css?v=89164a1ec765" />
+    <link rel="stylesheet" href="styles/index.css?v=4e0b64ea3e6a" />
   </head>
   <body>
     <main class="app-shell">
@@ -29,13 +29,14 @@
             <button type="button" class="budget-chip" data-budget="600" aria-pressed="false">600 元內</button>
           </div>
           <label class="custom-budget" for="budgetInput">自訂上限 <span class="amount-input"><span>NT$</span><input id="budgetInput" type="number" min="1" max="100000" step="1" placeholder="例如 300" inputmode="numeric" /></span></label>
-          <p class="filter-note">價格區間的上限需符合預算；價格待確認的餐廳只參加「不限預算」抽選。</p>
+          <p class="filter-note">依參考價格區間上限篩選；加點可能另計。價格待確認的餐廳只參加「不限預算」抽選。</p>
           <div class="result-card" id="resultCard">
             <span class="result-symbol" aria-hidden="true">✳</span>
             <p class="result-kicker" id="resultKicker">給今晚一個小驚喜</p>
             <div class="slot-window" aria-hidden="true"><div id="slotTrack" class="slot-track"><div class="slot-item">今晚的好運</div></div></div>
             <h2 id="resultName">拉一下，晚餐就有著落。</h2>
             <p id="resultPrice">從你的口袋名單，抽出今晚的答案。</p>
+            <a id="resultReference" class="map-link" target="_blank" rel="noopener noreferrer" hidden>查看價格來源 ↗</a>
             <a id="resultMap" class="map-link" target="_blank" rel="noopener noreferrer" hidden>在 Google Maps 找這家 ↗</a>
           </div>
           <p id="drawAnnouncement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
@@ -50,7 +51,7 @@
           <details id="manageOptions" class="manage-options">
             <summary>編輯餐廳與價格 <span aria-hidden="true">＋</span></summary>
             <div class="manage-content">
-              <p class="editor-note">參考 Google Maps 的每人消費區間填寫；未填價格也可以加入名單。請確認分店，再記錄價格。</p>
+              <p class="editor-note">可以參考官網菜單、食記或 Google Maps 填寫每人價格；請確認分店，並註明主餐、加點或服務費的計算方式。</p>
               <form id="addForm">
                 <label for="newOptionInput">餐廳名稱</label>
                 <div class="control-group"><input id="newOptionInput" type="text" maxlength="80" placeholder="加入你的口袋餐廳" required /><button class="action-btn" type="submit">加入</button></div>
@@ -62,7 +63,9 @@
                   <label for="priceMin">每人最低（NT$）<input id="priceMin" type="number" min="0" max="100000" step="1" inputmode="numeric" placeholder="例如 200" /></label>
                   <label for="priceMax">每人最高（NT$）<input id="priceMax" type="number" min="0" max="100000" step="1" inputmode="numeric" placeholder="例如 400" /></label>
                 </div>
-                <label for="priceSource">價格來源<select id="priceSource"><option value="personal">自行估算</option><option value="google-maps">已參考 Google Maps</option></select></label>
+                <label for="priceSource">價格來源<select id="priceSource"><option value="personal">自行估算</option><option value="google-maps">已參考 Google Maps</option><option value="menu">官網／菜單參考</option><option value="review">食記參考</option></select></label>
+                <label class="reference-field" for="priceReferenceUrl">價格來源網址（選填）<input id="priceReferenceUrl" type="url" placeholder="https://…" /></label>
+                <label class="reference-field" for="priceNote">價格說明（選填）<input id="priceNote" type="text" maxlength="160" placeholder="例如：一份主餐，飲料與加點另計" /></label>
                 <p class="editor-note">若只有平均金額，最低與最高填相同數字。清空兩欄並儲存可恢復「待確認」。</p>
                 <div class="editor-actions"><a id="editMap" class="map-link" target="_blank" rel="noopener noreferrer">查詢 Google Maps ↗</a><button class="action-btn" type="submit">儲存價格</button></div>
               </form>
@@ -73,6 +76,6 @@
       </div>
       <footer>好好吃飯，就是今天的小成就。<span>價格僅供參考，以店家現場為準。</span></footer>
     </main>
-    <script type="module" src="js/index.js?v=0f54ada028da"></script>
+    <script type="module" src="js/index.js?v=9f198f703fed"></script>
   </body>
 </html>

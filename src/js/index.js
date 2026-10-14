@@ -1,5 +1,5 @@
-import { DEFAULT_RESTAURANTS } from './restaurants.js?v=eeffa6629eb2';
-import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants } from './restaurant-model.js?v=f9dd8536c80d';
+import { DEFAULT_RESTAURANTS } from './restaurants.js?v=dc4c3601aff5';
+import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl } from './restaurant-model.js?v=9f1f501edb88';
 
 const STORAGE_KEY = 'foodturntable_restaurants_v2';
 const LEGACY_STORAGE_KEY = 'minimalist_wheel_options';
@@ -31,18 +31,13 @@ function persist() {
 
 function candidates() { return restaurants.filter((r) => matchesBudget(r, budget)); }
 
-function sourceLabel(restaurant) {
-  if (!hasPrice(restaurant)) return '查詢 Maps 後可補上價格';
-  const source = restaurant.priceSource === 'google-maps' ? 'Google Maps（手動記錄）' : '自行估算';
-  return restaurant.priceCheckedAt ? `${source} · ${restaurant.priceCheckedAt}` : source;
-}
 
 function render() {
   const eligible = candidates();
   $('listCount').textContent = restaurants.length;
   $('candidateCount').textContent = eligible.length ? `${eligible.length} 家餐廳參加抽選 · 每家機率相同` : '沒有符合預算的餐廳，試試提高預算或補上價格。';
   const unknown = restaurants.filter((r) => !hasPrice(r)).length;
-  $('priceNotice').textContent = unknown ? `${unknown} 家價格待確認。Maps 連結為店名查詢，請核對分店與每人消費區間。` : '已記錄每人消費；實際價格與分店請以 Google Maps 和店家資訊為準。';
+  $('priceNotice').textContent = unknown ? `${unknown} 家價格待確認。其餘可查看價格來源；Maps 連結為店名查詢，請核對分店。` : '已記錄每人參考價格；請查看各店來源與說明，實際消費以店家現場為準。';
   $('drawButton').disabled = drawing || !eligible.length || !$('budgetInput').validity.valid;
   $('restaurantList').replaceChildren();
   for (const restaurant of restaurants) {
@@ -51,8 +46,23 @@ function render() {
     const info = document.createElement('div'); info.className = 'restaurant-info';
     const name = document.createElement('div'); name.className = 'restaurant-name'; name.textContent = restaurant.name;
     const price = document.createElement('div'); price.className = 'restaurant-price'; price.textContent = priceLabel(restaurant);
-    price.title = sourceLabel(restaurant);
+    price.title = priceSourceLabel(restaurant);
     info.append(name, price);
+    if (hasPrice(restaurant)) {
+      const source = document.createElement('div'); source.className = 'restaurant-source';
+      source.textContent = priceSourceLabel(restaurant);
+      const reference = priceReferenceUrl(restaurant);
+      if (reference) {
+        const anchor = document.createElement('a'); anchor.href = reference;
+        anchor.textContent = '查看來源 ↗'; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
+        source.append(document.createTextNode(' · '), anchor);
+      }
+      info.append(source);
+      if (restaurant.priceNote) {
+        const note = document.createElement('div'); note.className = 'restaurant-note';
+        note.textContent = restaurant.priceNote; info.append(note);
+      }
+    }
     const link = document.createElement('a'); link.className = 'restaurant-map'; link.textContent = '↗';
     link.href = mapUrl(restaurant); link.target = '_blank'; link.rel = 'noopener noreferrer';
     link.setAttribute('aria-label', `在 Google Maps 查詢${restaurant.name}`);
@@ -77,7 +87,9 @@ function syncEditor() {
   const restaurant = restaurants.find((r) => r.name === $('removeOptionSelect').value);
   $('priceMin').value = restaurant?.priceMin ?? '';
   $('priceMax').value = restaurant?.priceMax ?? '';
-  $('priceSource').value = restaurant?.priceSource === 'google-maps' ? 'google-maps' : 'personal';
+  $('priceSource').value = ['google-maps', 'menu', 'review'].includes(restaurant?.priceSource) ? restaurant.priceSource : 'personal';
+  $('priceReferenceUrl').value = restaurant?.priceReferenceUrl ?? '';
+  $('priceNote').value = restaurant?.priceNote ?? '';
   $('editMap').hidden = !restaurant;
   if (restaurant) $('editMap').href = mapUrl(restaurant);
 }
@@ -88,6 +100,7 @@ function resetResult() {
   $('resultName').textContent = '拉一下，晚餐就有著落。';
   $('resultPrice').textContent = '從你的口袋名單，抽出今晚的答案。';
   $('resultMap').hidden = true;
+  $('resultReference').hidden = true;
   $('drawAnnouncement').textContent = '';
   setReel(['今晚的好運']);
 }
@@ -113,7 +126,7 @@ async function draw() {
   drawing = true; winnerName = null;
   // Choose the winner once, independently of animation length or timing.
   const winner = eligible[Math.floor(Math.random() * eligible.length)];
-  $('resultCard').classList.add('drawing'); $('resultMap').hidden = true;
+  $('resultCard').classList.add('drawing'); $('resultMap').hidden = true; $('resultReference').hidden = true;
   $('resultKicker').textContent = '好運正在路上'; $('resultName').textContent = '今晚的答案是…';
   $('resultPrice').textContent = '從符合預算的餐廳中抽選';
   $('drawAnnouncement').textContent = '正在抽選餐廳';
@@ -129,7 +142,11 @@ async function draw() {
   setReel([winner.name]); winnerName = winner.name; drawing = false;
   $('resultCard').classList.remove('drawing'); $('resultKicker').textContent = '今晚就吃這家';
   $('resultName').textContent = winner.name;
-  $('resultPrice').textContent = `${priceLabel(winner)} · ${hasPrice(winner) ? sourceLabel(winner) : '出發前先確認價格'} `;
+  $('resultPrice').textContent = `${priceLabel(winner)} · ${hasPrice(winner) ? priceSourceLabel(winner) : '出發前先確認價格'} `;
+  if (winner.priceNote) $('resultPrice').textContent += ` · ${winner.priceNote}`;
+  const reference = priceReferenceUrl(winner);
+  $('resultReference').hidden = !reference;
+  if (reference) $('resultReference').href = reference;
   $('resultMap').href = mapUrl(winner); $('resultMap').hidden = false;
   $('drawAnnouncement').textContent = `今晚就吃${winner.name}，${priceLabel(winner)}`;
   $('drawButton').firstElementChild.textContent = '再拉一次'; render();
@@ -172,6 +189,12 @@ $('priceForm').addEventListener('submit', (event) => {
   if ((min === '') !== (max === '') || (min !== '' && Number(min) > Number(max))) {
     $('editMessage').textContent = '請填寫完整區間，最高金額不能小於最低金額。'; return;
   }
+  const referenceInput = $('priceReferenceUrl').value.trim();
+  if (min !== '' && referenceInput && !priceReferenceUrl({priceMin: Number(min), priceMax: Number(max), priceReferenceUrl: referenceInput})) {
+    $('editMessage').textContent = '來源網址請使用不含帳號密碼的 HTTPS 網址。'; return;
+  }
+  restaurant.priceReferenceUrl = min === '' ? null : referenceInput || null;
+  restaurant.priceNote = min === '' ? null : $('priceNote').value.trim() || null;
   restaurant.priceEdited = true;
   restaurant.priceMin = min === '' ? null : Number(min);
   restaurant.priceMax = max === '' ? null : Number(max);

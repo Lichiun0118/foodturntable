@@ -41,9 +41,15 @@ export function normalizeRestaurants(records, defaults) {
     // edited them. Let those entries receive newly verified shared defaults.
     // A valid personal price or an explicit clear must remain a local override.
     if (!hasPrice(saved) && saved.priceEdited !== true) {
-      for (const key of ['priceMin', 'priceMax', 'priceSource', 'priceCheckedAt']) {
+      for (const key of ['priceMin', 'priceMax', 'priceSource', 'priceCheckedAt', 'priceReferenceUrl', 'priceNote']) {
         restaurant[key] = base[key] ?? null;
       }
+    }
+    if (hasPrice(saved) || saved.priceEdited === true) {
+      // An old personal override must not inherit a source URL/description
+      // that describes a different shared price.
+      restaurant.priceReferenceUrl = saved.priceReferenceUrl ?? null;
+      restaurant.priceNote = saved.priceNote ?? null;
     }
     if (!saved.mapsUrl) restaurant.mapsUrl = base.mapsUrl ?? null;
     if (!hasPrice(restaurant)) {
@@ -51,7 +57,31 @@ export function normalizeRestaurants(records, defaults) {
       restaurant.priceMax = null;
       restaurant.priceSource = null;
       restaurant.priceCheckedAt = null;
+      restaurant.priceReferenceUrl = null;
+      restaurant.priceNote = null;
     }
     return [restaurant];
   });
+}
+
+
+export function priceSourceLabel(restaurant) {
+  if (!hasPrice(restaurant)) return '價格待確認';
+  const labels = {
+    'google-maps': 'Google Maps（手動記錄）',
+    menu: '官網／菜單參考',
+    review: '食記參考',
+    personal: '自行估算',
+  };
+  const label = labels[restaurant.priceSource] || '自行估算';
+  return restaurant.priceCheckedAt ? `${label} · ${restaurant.priceCheckedAt}` : label;
+}
+
+export function priceReferenceUrl(restaurant) {
+  if (!hasPrice(restaurant) || !restaurant.priceReferenceUrl) return null;
+  try {
+    const url = new URL(restaurant.priceReferenceUrl);
+    if (url.protocol === 'https:' && !url.username && !url.password) return url.href;
+  } catch { /* Missing/invalid references do not become clickable links. */ }
+  return null;
 }

@@ -21,7 +21,9 @@ node --test tests/restaurant-model.test.mjs
 `src/js/restaurants.js` 是預設名單來源。目前「大盛」採用使用者提供並確認為「大盛豬排」的 Google Maps 截圖：平均每人 NT$200–400（69 人回報，記錄日期 2026-10-14）。Maps 連結仍為店名搜尋，不代表已核對特定分店網址。其他店價格尚未核對，以 `null` 標示，不能用推測值當作 Google Maps 資料。每筆可記錄：
 
 - `priceMin` / `priceMax`：每人新台幣消費區間；若只有平均金額，兩欄填相同值。
-- `priceSource`：`google-maps` 表示已由人工核對 Maps，`personal` 表示自行估算。
+- `priceSource`：`google-maps` 表示 Maps 手動記錄、`menu` 表示官網／菜單參考、`review` 表示食記參考、`personal` 表示自行估算。
+- `priceReferenceUrl`：參考價格的原始 HTTPS 網頁；介面提供查看來源連結。
+- `priceNote`：參考範圍的計算方式，例如一份主餐、是否含飲料／服務費。參考菜單價不等於 Maps 平均每人消費。
 - `priceCheckedAt`：核對日期（YYYY-MM-DD）。
 - `mapsUrl`：已核對分店的 HTTPS Google Maps 連結。未填時提供「公館＋店名」搜尋連結，搜尋結果不代表已確認分店。
 
