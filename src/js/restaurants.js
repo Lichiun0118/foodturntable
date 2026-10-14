@@ -29,7 +29,7 @@ export const DEFAULT_OPTIONS = [
   "龍記炒燴",
   "喫尤鐵板燒",
   "韓天閣",
-  "鐵三牛螺螄粉",
+  "鐵三中螺螄粉",
 ];
 
 // Source: the user's price table, supplied on 2026-10-14 (Asia/Taipei).
@@ -65,7 +65,7 @@ const PRICE_RANGES = {
   '龍記炒燴': [1, 200],
   '喫尤鐵板燒': [200, 400],
   '韓天閣': [200, 400],
-  '鐵三牛螺螄粉': [200, 400],
+  '鐵三中螺螄粉': [200, 400],
 };
 
 // Added from the six Google Maps screenshots supplied by the user. Keep the
@@ -76,7 +76,7 @@ const NEW_MAP_QUERIES = {
   '龍記炒燴': '公館 水源市場 龍記炒燴',
   '喫尤鐵板燒': '喫尤平價鐵板燒 公館店',
   '韓天閣': '公館 韓天閣',
-  '鐵三牛螺螄粉': '鐵三牛螺螄粉 台北公館店',
+  '鐵三中螺螄粉': '鐵三中螺螄粉 台北公館店',
 };
 
 export const DEFAULT_RESTAURANTS = DEFAULT_OPTIONS.map((name) => ({

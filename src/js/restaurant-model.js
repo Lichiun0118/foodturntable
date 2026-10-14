@@ -29,7 +29,8 @@ export function mapUrl(restaurant) {
 export function normalizeRestaurants(records, defaults) {
   const names = new Set();
   return records.flatMap((record) => {
-    const name = typeof record === 'string' ? record.trim() : record?.name?.trim?.();
+    const originalName = typeof record === 'string' ? record.trim() : record?.name?.trim?.();
+    const name = originalName === '鐵三牛螺螄粉' ? '鐵三中螺螄粉' : originalName;
     if (!name || names.has(name)) return [];
     names.add(name);
     const base = defaults.find((r) => r.name === name) || {
@@ -59,7 +60,7 @@ export function normalizeRestaurants(records, defaults) {
       restaurant.priceReferenceUrl = saved.priceReferenceUrl ?? null;
       restaurant.priceNote = saved.priceNote ?? null;
     }
-    if (!saved.mapsUrl) restaurant.mapsUrl = base.mapsUrl ?? null;
+    if (originalName !== name || !saved.mapsUrl) restaurant.mapsUrl = base.mapsUrl ?? null;
     if (!hasPrice(restaurant)) {
       restaurant.priceMin = null;
       restaurant.priceMax = null;
