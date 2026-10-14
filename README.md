@@ -18,7 +18,7 @@ node --test tests/restaurant-model.test.mjs
 
 ## 價格資料
 
-`src/js/restaurants.js` 是預設名單來源。目前「大盛」採用使用者提供並確認為「大盛豬排」的 Google Maps 截圖：平均每人 NT$200–400（69 人回報，記錄日期 2026-10-14）。Maps 連結仍為店名搜尋，不代表已核對特定分店網址。另有兩家官網菜單參考餐費：麥當勞 NT$100–138（兩組 1+1 星級點），壽司郎 NT$240–480（每人 6～8 盤、每盤 NT$40–60）。這是明確用餐組合的預算示例，不是平均消費或全品項價格範圍。其他店價格尚未核對，以 `null` 標示，不能用推測值當作 Google Maps 資料。每筆可記錄：
+`src/js/restaurants.js` 是預設名單來源。全部 23 家價格採用使用者於 2026-10-14 提供的表格；使用者表示均參考 Google Maps。介面標示「Google Maps（使用者提供）」，該日期為資料記錄日，不代表程式即時查價或獨立核對分店。完整價格表見 [reference-prices.md](docs/reference-prices.md)。原有麥當勞、壽司郎菜單估算已被取代。每筆可記錄：
 
 - `priceMin` / `priceMax`：每人新台幣消費區間；若只有平均金額，兩欄填相同值。
 - `priceSource`：`google-maps` 表示 Maps 手動記錄、`menu` 表示官網／菜單參考、`review` 表示食記參考、`personal` 表示自行估算。

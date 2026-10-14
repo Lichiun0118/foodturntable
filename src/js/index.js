@@ -1,5 +1,5 @@
-import { DEFAULT_RESTAURANTS } from './restaurants.js?v=76a08ec61e42';
-import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl } from './restaurant-model.js?v=9f1f501edb88';
+import { DEFAULT_RESTAURANTS } from './restaurants.js?v=e816c3e91528';
+import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl } from './restaurant-model.js?v=698f55e79d63';
 
 const STORAGE_KEY = 'foodturntable_restaurants_v2';
 const LEGACY_STORAGE_KEY = 'minimalist_wheel_options';

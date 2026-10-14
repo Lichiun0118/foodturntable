@@ -37,17 +37,25 @@ export function normalizeRestaurants(records, defaults) {
     };
     const saved = typeof record === 'object' && record !== null ? record : {};
     const restaurant = { ...base, ...saved, name };
-    // Older saved lists contain null prices even when the visitor has never
-    // edited them. Let those entries receive newly verified shared defaults.
-    // A valid personal price or an explicit clear must remain a local override.
-    if (!hasPrice(saved) && saved.priceEdited !== true) {
+    // Preserve explicit user edits, including clears. Older versions did not
+    // mark default entries, so recognize only our exact former menu examples.
+    const oldMenuDefaults = {
+      '麥當勞': [100, 138],
+      '壽司郎': [240, 480],
+    };
+    const former = oldMenuDefaults[name];
+    const oldMenuDefault = saved.priceEdited !== true && saved.priceSource === 'menu'
+      && former && saved.priceMin === former[0] && saved.priceMax === former[1];
+    const personalOverride = saved.priceEdited === true
+      || (hasPrice(saved) && saved.priceEdited !== false && !oldMenuDefault);
+    if (!personalOverride) {
       for (const key of ['priceMin', 'priceMax', 'priceSource', 'priceCheckedAt', 'priceReferenceUrl', 'priceNote']) {
         restaurant[key] = base[key] ?? null;
       }
-    }
-    if (hasPrice(saved) || saved.priceEdited === true) {
-      // An old personal override must not inherit a source URL/description
-      // that describes a different shared price.
+      restaurant.priceEdited = false;
+    } else {
+      // A personal override must not inherit a URL/description that describes
+      // a different shared price.
       restaurant.priceReferenceUrl = saved.priceReferenceUrl ?? null;
       restaurant.priceNote = saved.priceNote ?? null;
     }
@@ -68,7 +76,7 @@ export function normalizeRestaurants(records, defaults) {
 export function priceSourceLabel(restaurant) {
   if (!hasPrice(restaurant)) return '價格待確認';
   const labels = {
-    'google-maps': 'Google Maps（手動記錄）',
+    'google-maps': 'Google Maps（使用者提供）',
     menu: '官網／菜單參考',
     review: '食記參考',
     personal: '自行估算',

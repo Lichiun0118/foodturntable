@@ -72,7 +72,7 @@ test('大盛 uses the user-supplied Maps range', () => {
   assert.equal(restaurant.priceSource, 'google-maps');
   assert.equal(matchesBudget(restaurant, 250), false);
   assert.equal(matchesBudget(restaurant, 400), true);
-  assert.equal(DEFAULT_RESTAURANTS.find(r => r.name === '小高').priceMax, null);
+  assert.equal(DEFAULT_RESTAURANTS.find(r => r.name === '小高').priceMax, 145);
 });
 
 
@@ -95,4 +95,27 @@ test('reference links reject executable URLs and embedded credentials', () => {
   }
   assert.equal(priceReferenceUrl({...known, priceReferenceUrl: 'https://example.com/menu'}), 'https://example.com/menu');
   assert.equal(priceReferenceUrl({priceMin: null, priceMax: null, priceReferenceUrl: 'https://example.com/menu'}), null);
+});
+
+
+test('former menu defaults update to shared Maps prices but explicit personal edits remain', () => {
+  const records = [
+    {name: '麥當勞', priceMin: 100, priceMax: 138, priceSource: 'menu', priceNote: 'old menu estimate'},
+    {name: '壽司郎', priceMin: 240, priceMax: 480, priceSource: 'menu'},
+  ];
+  const updated = normalizeRestaurants(records, DEFAULT_RESTAURANTS);
+  assert.equal(updated[0].priceMax, 250);
+  assert.equal(updated[1].priceMax, 600);
+  assert(updated.every(r => r.priceSource === 'google-maps' && r.priceNote === null));
+  const personal = normalizeRestaurants(records.map(r => ({...r, priceEdited: true})), DEFAULT_RESTAURANTS);
+  assert.equal(personal[0].priceMax, 138);
+  assert.equal(personal[1].priceMax, 480);
+});
+
+test('marked shared defaults refresh on future updates without reverting explicit clears', () => {
+  const current = DEFAULT_RESTAURANTS.find(r => r.name === '小高');
+  const [updated] = normalizeRestaurants([{...current, priceMax: 120}], DEFAULT_RESTAURANTS);
+  assert.equal(updated.priceMax, 145);
+  const [cleared] = normalizeRestaurants([{...current, priceMin: null, priceMax: null, priceEdited: true}], DEFAULT_RESTAURANTS);
+  assert.equal(cleared.priceMax, null);
 });
