@@ -42,3 +42,35 @@ test('Maps links only accept supported HTTPS hosts or safe name searches', () =>
     assert.equal(url.searchParams.get('query'), '公館 A&B');
   }
 });
+
+
+test('new shared Maps prices reach existing visitors with previously unknown prices', () => {
+  const defaults = [{name: '測試店', priceMin: 200, priceMax: 400, priceSource: 'google-maps', priceCheckedAt: '2026-10-14', mapsUrl: 'https://maps.app.goo.gl/example'}];
+  const [restaurant] = normalizeRestaurants([{name: '測試店', priceMin: null, priceMax: null, priceSource: null, priceCheckedAt: null, mapsUrl: null}], defaults);
+  assert.equal(restaurant.priceMin, 200);
+  assert.equal(restaurant.priceMax, 400);
+  assert.equal(restaurant.priceSource, 'google-maps');
+  assert.equal(restaurant.mapsUrl, defaults[0].mapsUrl);
+  assert.equal(matchesBudget(restaurant, 399), false);
+  assert.equal(matchesBudget(restaurant, 400), true);
+});
+
+test('personal prices and explicit price clearing survive a shared default update', () => {
+  const defaults = [{name: '測試店', priceMin: 200, priceMax: 400, priceSource: 'google-maps'}];
+  const [personal] = normalizeRestaurants([{name: '測試店', priceMin: 150, priceMax: 180, priceSource: 'personal'}], defaults);
+  assert.equal(personal.priceMax, 180);
+  assert.equal(personal.priceSource, 'personal');
+  const [cleared] = normalizeRestaurants([{name: '測試店', priceMin: null, priceMax: null, priceEdited: true}], defaults);
+  assert.equal(cleared.priceMax, null);
+});
+
+
+test('大盛 uses the user-supplied Maps range; other unverified restaurants stay unknown', () => {
+  const restaurant = DEFAULT_RESTAURANTS.find(r => r.name === '大盛');
+  assert.equal(restaurant.priceMin, 200);
+  assert.equal(restaurant.priceMax, 400);
+  assert.equal(restaurant.priceSource, 'google-maps');
+  assert.equal(matchesBudget(restaurant, 250), false);
+  assert.equal(matchesBudget(restaurant, 400), true);
+  assert.equal(DEFAULT_RESTAURANTS.filter(hasPrice).length, 1);
+});

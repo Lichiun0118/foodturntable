@@ -172,6 +172,7 @@ $('priceForm').addEventListener('submit', (event) => {
   if ((min === '') !== (max === '') || (min !== '' && Number(min) > Number(max))) {
     $('editMessage').textContent = '請填寫完整區間，最高金額不能小於最低金額。'; return;
   }
+  restaurant.priceEdited = true;
   restaurant.priceMin = min === '' ? null : Number(min);
   restaurant.priceMax = max === '' ? null : Number(max);
   restaurant.priceSource = min === '' ? null : $('priceSource').value;

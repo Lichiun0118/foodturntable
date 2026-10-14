@@ -35,7 +35,17 @@ export function normalizeRestaurants(records, defaults) {
     const base = defaults.find((r) => r.name === name) || {
       name, priceMin: null, priceMax: null, priceSource: null, priceCheckedAt: null, mapsUrl: null,
     };
-    const restaurant = { ...base, ...(typeof record === 'object' ? record : {}), name };
+    const saved = typeof record === 'object' && record !== null ? record : {};
+    const restaurant = { ...base, ...saved, name };
+    // Older saved lists contain null prices even when the visitor has never
+    // edited them. Let those entries receive newly verified shared defaults.
+    // A valid personal price or an explicit clear must remain a local override.
+    if (!hasPrice(saved) && saved.priceEdited !== true) {
+      for (const key of ['priceMin', 'priceMax', 'priceSource', 'priceCheckedAt']) {
+        restaurant[key] = base[key] ?? null;
+      }
+    }
+    if (!saved.mapsUrl) restaurant.mapsUrl = base.mapsUrl ?? null;
     if (!hasPrice(restaurant)) {
       restaurant.priceMin = null;
       restaurant.priceMax = null;

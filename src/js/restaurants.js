@@ -24,9 +24,21 @@ export const DEFAULT_OPTIONS = [
   "台大牛莊",
 ];
 
-// Google Maps prices have not been verified for these branches. Never infer a
-// price from a restaurant name. Add confirmed per-person ranges and source
-// links here when branch-specific information becomes available.
+// Source: user-provided Google Maps screenshot, identified by the user as
+// 大盛豬排 on 2026-10-14 (Asia/Taipei): 平均每人 $200–400, 69 人回報.
+// This is a reported per-person range, not a single average of NT$300.
+// The link is a name search, not a verified branch-specific place URL.
+const VERIFIED_PRICES = {
+  '大盛': {
+    priceMin: 200,
+    priceMax: 400,
+    priceSource: 'google-maps',
+    priceCheckedAt: '2026-10-14',
+    mapsUrl: 'https://www.google.com/maps/search/?api=1&query=%E5%85%AC%E9%A4%A8%20%E5%A4%A7%E7%9B%9B%E8%B1%AC%E6%8E%92',
+  },
+};
+
+// Other prices remain unknown until confirmed against the intended branch.
 export const DEFAULT_RESTAURANTS = DEFAULT_OPTIONS.map((name) => ({
   name,
   priceMin: null,
@@ -34,4 +46,5 @@ export const DEFAULT_RESTAURANTS = DEFAULT_OPTIONS.map((name) => ({
   priceSource: null,
   priceCheckedAt: null,
   mapsUrl: null,
+  ...VERIFIED_PRICES[name],
 }));
