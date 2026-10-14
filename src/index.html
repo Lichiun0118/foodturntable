@@ -3,43 +3,76 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>公館晚餐到底要吃什麼!!!!!!</title>
-    <!-- 引入思源黑體 -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles/index.css">
+    <meta name="theme-color" content="#f4f1ea" />
+    <title>今晚吃哪家｜公館晚餐拉霸</title>
+    <link rel="stylesheet" href="styles/index.css" />
   </head>
   <body>
-    <h1>公館晚餐選擇障礙</h1>
-
-    <div class="control-panel">
-      <div class="control-group">
-        <input type="text" id="newOptionInput" placeholder="新增選項..." />
-        <button class="action-btn" onclick="addOption()">加入</button>
+    <main class="app-shell">
+      <header class="page-header">
+        <a class="brand" href="./" aria-label="今晚吃哪家首頁"><span class="brand-mark" aria-hidden="true">食</span> 公館晚餐提案</a>
+        <span class="header-note">少一點猶豫，多一點好吃。</span>
+      </header>
+      <section class="intro">
+        <p class="eyebrow">A LITTLE HELP FOR DINNER</p>
+        <h1>今晚，<br class="mobile-break" />吃哪家？</h1>
+        <p>先選預算，剩下的交給一點運氣。</p>
+      </section>
+      <div class="main-grid">
+        <section class="picker-panel" aria-labelledby="budgetTitle">
+          <div class="section-heading"><span class="step">01</span><h2 id="budgetTitle">今天的預算</h2><span class="muted">每人／NT$</span></div>
+          <div class="budget-options" role="group" aria-label="每人預算上限">
+            <button type="button" class="budget-chip active" data-budget="" aria-pressed="true">不限預算</button>
+            <button type="button" class="budget-chip" data-budget="150" aria-pressed="false">150 元內</button>
+            <button type="button" class="budget-chip" data-budget="250" aria-pressed="false">250 元內</button>
+            <button type="button" class="budget-chip" data-budget="400" aria-pressed="false">400 元內</button>
+            <button type="button" class="budget-chip" data-budget="600" aria-pressed="false">600 元內</button>
+          </div>
+          <label class="custom-budget" for="budgetInput">自訂上限 <span class="amount-input"><span>NT$</span><input id="budgetInput" type="number" min="1" max="100000" step="1" placeholder="例如 300" inputmode="numeric" /></span></label>
+          <p class="filter-note">價格區間的上限需符合預算；價格待確認的餐廳只參加「不限預算」抽選。</p>
+          <div class="result-card" id="resultCard">
+            <span class="result-symbol" aria-hidden="true">✳</span>
+            <p class="result-kicker" id="resultKicker">給今晚一個小驚喜</p>
+            <div class="slot-window" aria-hidden="true"><div id="slotTrack" class="slot-track"><div class="slot-item">今晚的好運</div></div></div>
+            <h2 id="resultName">拉一下，晚餐就有著落。</h2>
+            <p id="resultPrice">從你的口袋名單，抽出今晚的答案。</p>
+            <a id="resultMap" class="map-link" target="_blank" rel="noopener noreferrer" hidden>在 Google Maps 找這家 ↗</a>
+          </div>
+          <p id="drawAnnouncement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+          <button id="drawButton" class="primary-button" type="button"><span>拉一下，決定晚餐</span><span aria-hidden="true">↗</span></button>
+          <p id="candidateCount" class="candidate-count" aria-live="polite"></p>
+        </section>
+        <section class="list-panel" aria-labelledby="listTitle">
+          <div class="section-heading"><span class="step">02</span><h2 id="listTitle">你的晚餐名單</h2><span id="listCount" class="count-badge"></span></div>
+          <p class="list-description">收藏喜歡的店，讓每一餐都值得期待。</p>
+          <p id="priceNotice" class="price-notice"></p>
+          <div id="restaurantList" class="restaurant-list"></div>
+          <details id="manageOptions" class="manage-options">
+            <summary>編輯餐廳與價格 <span aria-hidden="true">＋</span></summary>
+            <div class="manage-content">
+              <p class="editor-note">參考 Google Maps 的每人消費區間填寫；未填價格也可以加入名單。請確認分店，再記錄價格。</p>
+              <form id="addForm">
+                <label for="newOptionInput">餐廳名稱</label>
+                <div class="control-group"><input id="newOptionInput" type="text" maxlength="80" placeholder="加入你的口袋餐廳" required /><button class="action-btn" type="submit">加入</button></div>
+              </form>
+              <form id="priceForm">
+                <label for="removeOptionSelect">選擇餐廳</label>
+                <div class="control-group"><select id="removeOptionSelect"></select><button id="removeButton" class="action-btn" type="button">移除</button></div>
+                <div class="price-fields">
+                  <label for="priceMin">每人最低（NT$）<input id="priceMin" type="number" min="0" max="100000" step="1" inputmode="numeric" placeholder="例如 200" /></label>
+                  <label for="priceMax">每人最高（NT$）<input id="priceMax" type="number" min="0" max="100000" step="1" inputmode="numeric" placeholder="例如 400" /></label>
+                </div>
+                <label for="priceSource">價格來源<select id="priceSource"><option value="personal">自行估算</option><option value="google-maps">已參考 Google Maps</option></select></label>
+                <p class="editor-note">若只有平均金額，最低與最高填相同數字。清空兩欄並儲存可恢復「待確認」。</p>
+                <div class="editor-actions"><a id="editMap" class="map-link" target="_blank" rel="noopener noreferrer">查詢 Google Maps ↗</a><button class="action-btn" type="submit">儲存價格</button></div>
+              </form>
+              <p id="editMessage" class="edit-message" role="status"></p>
+            </div>
+          </details>
+        </section>
       </div>
-      <div class="control-group">
-        <select id="removeOptionSelect"></select>
-        <button class="action-btn" onclick="removeOption()">移除</button>
-      </div>
-    </div>
-
-    <div class="data-display" id="dataDisplay"></div>
-
-    <button class="spin-btn" onclick="executeSpin()">開始旋轉</button>
-
-    <div id="wheel-container">
-      <div id="pointer"></div>
-      <canvas
-        id="wheelCanvas"
-        width="760"
-        height="760"
-      ></canvas>
-    </div>
-
-    <div id="resultText"></div>
-
+      <footer>好好吃飯，就是今天的小成就。<span>價格僅供參考，以店家現場為準。</span></footer>
+    </main>
     <script type="module" src="js/index.js"></script>
   </body>
 </html>
