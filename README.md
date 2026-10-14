@@ -18,7 +18,7 @@ node --test tests/restaurant-model.test.mjs
 
 ## 價格資料
 
-`src/js/restaurants.js` 是預設名單來源。全部 23 家價格採用使用者於 2026-10-14 提供的表格；使用者表示均參考 Google Maps。介面標示「Google Maps（使用者提供）」，該日期為資料記錄日，不代表程式即時查價或獨立核對分店。完整價格表見 [reference-prices.md](docs/reference-prices.md)。原有麥當勞、壽司郎菜單估算已被取代。每筆可記錄：
+`src/js/restaurants.js` 是預設名單來源。原有 23 家價格採用使用者於 2026-10-14 提供的表格，另外 6 家依使用者提供的 Google Maps 截圖新增，目前共 29 家。介面標示「Google Maps（使用者提供）」，該日期為資料記錄日，不代表程式即時查價或獨立核對分店。完整價格表見 [reference-prices.md](docs/reference-prices.md)。原有麥當勞、壽司郎菜單估算已被取代。每筆可記錄：
 
 - `priceMin` / `priceMax`：每人新台幣消費區間；若只有平均金額，兩欄填相同值。
 - `priceSource`：`google-maps` 表示 Maps 手動記錄、`menu` 表示官網／菜單參考、`review` 表示食記參考、`personal` 表示自行估算。
@@ -42,3 +42,6 @@ python3 scripts/version-assets.py
 ```
 
 這會依檔案內容更新 HTML 中 CSS／JavaScript 的版本網址，以及入口模組引用的餐廳資料與篩選模組版本，避免手機讀到「新 HTML＋舊 CSS」或舊價格。程式可重複執行，沒有額外套件需求。網站部署時請一起上傳 `src` 內全部檔案並保留資料夾結構。
+
+
+新增預設店家時，調高 `CATALOG_VERSION`，並標記該店的 `introducedIn` 版本。儲存格式包含名單與 catalogVersion；舊版陣列視為版本 1。已存名單會補上新版本的新增店家，但不會恢復以前移除的店。使用者移除新店後儲存，後續重新載入也不會加回。

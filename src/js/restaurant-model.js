@@ -93,3 +93,19 @@ export function priceReferenceUrl(restaurant) {
   } catch { /* Missing/invalid references do not become clickable links. */ }
   return null;
 }
+
+
+// Only add defaults introduced after the saved catalog version. Do not
+// resurrect older restaurants removed by the visitor or duplicate custom ones.
+export function restoreRestaurantList(records, defaults, catalogVersion = 1) {
+  const restaurants = normalizeRestaurants(records, defaults);
+  const names = new Set(restaurants.map(r => r.name));
+  const version = Number.isInteger(catalogVersion) && catalogVersion >= 1 ? catalogVersion : 1;
+  for (const restaurant of defaults) {
+    if (restaurant.introducedIn > version && !names.has(restaurant.name)) {
+      restaurants.push({...restaurant});
+      names.add(restaurant.name);
+    }
+  }
+  return restaurants;
+}

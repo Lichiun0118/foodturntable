@@ -1,5 +1,5 @@
-import { DEFAULT_RESTAURANTS } from './restaurants.js?v=e816c3e91528';
-import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl } from './restaurant-model.js?v=698f55e79d63';
+import { DEFAULT_RESTAURANTS, CATALOG_VERSION } from './restaurants.js?v=9cfa9ad2bd68';
+import { hasPrice, matchesBudget, priceLabel, mapUrl, restoreRestaurantList, priceSourceLabel, priceReferenceUrl } from './restaurant-model.js?v=c99fdadfb475';
 
 const STORAGE_KEY = 'foodturntable_restaurants_v2';
 const LEGACY_STORAGE_KEY = 'minimalist_wheel_options';
@@ -14,14 +14,17 @@ function loadRestaurants() {
     const saved = localStorage.getItem(STORAGE_KEY);
     const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
     const parsed = JSON.parse(saved ?? legacy ?? 'null');
-    if (Array.isArray(parsed)) return normalizeRestaurants(parsed, DEFAULT_RESTAURANTS);
+    if (Array.isArray(parsed)) return restoreRestaurantList(parsed, DEFAULT_RESTAURANTS, 1);
+    if (Array.isArray(parsed?.restaurants)) {
+      return restoreRestaurantList(parsed.restaurants, DEFAULT_RESTAURANTS, parsed.catalogVersion);
+    }
   } catch { /* Invalid or inaccessible storage should not stop dinner selection. */ }
   return DEFAULT_RESTAURANTS.map((r) => ({ ...r }));
 }
 
 function persist() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(restaurants));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({catalogVersion: CATALOG_VERSION, restaurants}));
     return true;
   } catch {
     $('editMessage').textContent = '瀏覽器無法儲存資料；這次修改僅保留到頁面關閉。';

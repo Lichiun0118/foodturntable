@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl } from '../src/js/restaurant-model.js';
+import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl, restoreRestaurantList } from '../src/js/restaurant-model.js';
 import { DEFAULT_RESTAURANTS } from '../src/js/restaurants.js';
 
 test('budget cap uses the whole per-person range, including exact boundary', () => {
@@ -118,4 +118,25 @@ test('marked shared defaults refresh on future updates without reverting explici
   assert.equal(updated.priceMax, 145);
   const [cleared] = normalizeRestaurants([{...current, priceMin: null, priceMax: null, priceEdited: true}], DEFAULT_RESTAURANTS);
   assert.equal(cleared.priceMax, null);
+});
+
+
+test('catalog upgrade adds only new defaults and preserves deletions, edits, and custom names', () => {
+  const defaults = [
+    {name: '舊店', priceMin: 100, priceMax: 200, introducedIn: 1},
+    {name: '新店', priceMin: 200, priceMax: 400, introducedIn: 2},
+    {name: '另一新店', priceMin: 1, priceMax: 200, introducedIn: 2},
+  ];
+  const records = [{name: '新店', priceMin: 90, priceMax: 100, priceSource: 'personal', priceEdited: true}, '自訂店'];
+  const restored = restoreRestaurantList(records, defaults, 1);
+  assert.deepEqual(restored.map(r => r.name), ['新店', '自訂店', '另一新店']);
+  assert.equal(restored[0].priceMax, 100);
+  assert.equal(restored[2].priceMin, 1);
+  assert.equal(restoreRestaurantList(restored, defaults, 1).length, 3);
+});
+
+test('removed new restaurant stays removed once the current catalog version is saved', () => {
+  const defaults = [{name: '新店', priceMin: 1, priceMax: 200, introducedIn: 2}];
+  assert.deepEqual(restoreRestaurantList([], defaults, 2), []);
+  assert.equal(restoreRestaurantList([], defaults, 1).length, 1);
 });
