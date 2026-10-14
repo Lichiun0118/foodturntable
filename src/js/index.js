@@ -1,4 +1,4 @@
-import { DEFAULT_RESTAURANTS } from './restaurants.js?v=dc4c3601aff5';
+import { DEFAULT_RESTAURANTS } from './restaurants.js?v=76a08ec61e42';
 import { hasPrice, matchesBudget, priceLabel, mapUrl, normalizeRestaurants, priceSourceLabel, priceReferenceUrl } from './restaurant-model.js?v=9f1f501edb88';
 
 const STORAGE_KEY = 'foodturntable_restaurants_v2';

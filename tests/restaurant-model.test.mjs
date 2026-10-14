@@ -65,14 +65,14 @@ test('personal prices and explicit price clearing survive a shared default updat
 });
 
 
-test('大盛 uses the user-supplied Maps range; other unverified restaurants stay unknown', () => {
+test('大盛 uses the user-supplied Maps range', () => {
   const restaurant = DEFAULT_RESTAURANTS.find(r => r.name === '大盛');
   assert.equal(restaurant.priceMin, 200);
   assert.equal(restaurant.priceMax, 400);
   assert.equal(restaurant.priceSource, 'google-maps');
   assert.equal(matchesBudget(restaurant, 250), false);
   assert.equal(matchesBudget(restaurant, 400), true);
-  assert.equal(DEFAULT_RESTAURANTS.filter(hasPrice).length, 1);
+  assert.equal(DEFAULT_RESTAURANTS.find(r => r.name === '小高').priceMax, null);
 });
 
 

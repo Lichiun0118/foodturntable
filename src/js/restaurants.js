@@ -28,7 +28,23 @@ export const DEFAULT_OPTIONS = [
 // 大盛豬排 on 2026-10-14 (Asia/Taipei): 平均每人 $200–400, 69 人回報.
 // This is a reported per-person range, not a single average of NT$300.
 // The link is a name search, not a verified branch-specific place URL.
-const VERIFIED_PRICES = {
+const REFERENCE_PRICES = {
+  '麥當勞': {
+    priceMin: 100,
+    priceMax: 138,
+    priceSource: 'menu',
+    priceCheckedAt: '2026-10-14',
+    priceReferenceUrl: 'https://www.mcdonalds.com/tw/zh-tw/full-menu/BAOneMenu.html',
+    priceNote: '參考兩組 1+1 星級點（每組 50／69 元）；非超值全餐或外送價，依門市供應。',
+  },
+  '壽司郎': {
+    priceMin: 240,
+    priceMax: 480,
+    priceSource: 'menu',
+    priceCheckedAt: '2026-10-14',
+    priceReferenceUrl: 'https://www.sushiro.com.tw/Menu',
+    priceNote: '依每人 6～8 盤、每盤 40～60 元估算；飲料、甜點及高價盤另計，非平均消費統計。',
+  },
   '大盛': {
     priceMin: 200,
     priceMax: 400,
@@ -38,7 +54,8 @@ const VERIFIED_PRICES = {
   },
 };
 
-// Other prices remain unknown until confirmed against the intended branch.
+// Menu reference budgets describe the explicit meal examples above, not
+// every possible order or a measured average. Other prices remain unknown.
 export const DEFAULT_RESTAURANTS = DEFAULT_OPTIONS.map((name) => ({
   name,
   priceMin: null,
@@ -48,5 +65,5 @@ export const DEFAULT_RESTAURANTS = DEFAULT_OPTIONS.map((name) => ({
   mapsUrl: null,
   priceReferenceUrl: null,
   priceNote: null,
-  ...VERIFIED_PRICES[name],
+  ...REFERENCE_PRICES[name],
 }));
